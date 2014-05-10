@@ -41,10 +41,10 @@
             <!-- Any section element inside of this container is displayed as a slide -->
             <div class="slides">
                 <section>
-                    <h1>Responsive Images are coming</h1>
+                    <h1>Responsive Images</h1>
                     <p> <a href="https://twitter.com/yoavweiss">Yoav Weiss</a></p>
-                    <p>State Of the Browser - London, April 2014</p>
-                    <p><a href="http://yoavweiss.github.io/respimg-sotb-presentation/">yoavweiss.github.io/respimg-sotb-presentation</a></p>
+                    <p>BlinkOn - Zurich, May 2014</p>
+                    <p><a href="http://yoavweiss.github.io/respimg-blinkon-presentation/">yoavweiss.github.io/respimg-blinkon-presentation</a></p>
                     <aside class="notes">
                     </aside>
                 </section>
@@ -99,7 +99,7 @@
                     <p>Large images?</p>
                     <img width=600px src="resources/notimeforthat.gif" alt="Ain't nobody got time for that!">
                     <aside class="notes">
-                        And abuse of our users' time. RWD sites gt a reputation of being slow Web sites, mainly because of images.
+                        And abuse of our users' time. RWD sites got a reputation of being slow Web sites, mainly because of images.
                     </aside>
                 </section>
                 <section>
@@ -336,24 +336,24 @@
                         href="http://blog.thestudio4.co.uk/wp-content/uploads/2011/12/browser_logos1.png">blog.thestudio4.co.uk</a></p>
                 </section>
                 <section>
-                    <h2>Firefox</h2>
-                    Actively implementing!
-                    <aside class="notes">
-                        John Schoenick from Mozilla is currently working on it. Likely to hit the dev version soon.
-                    </aside>
-                </section>
-                <section>
                     <h2>Blink - Chrome &amp; Opera</h2>
                     Actively implementing!
                     <li class=fragment>srcset 'x' descriptor already shipped</li>
                     <li class=fragment>sizes and srcset - behind a flag</li>
-                    <li class=fragment>picture - work to start soon!</li>
+                    <li class=fragment>picture - work started</li>
                     <aside class="notes">
                         (fragments)
                         <p>I started out by implementing srcset's x descriptor. It shipped in Chrome/Opera stable a few weeks back.</p>
-                        <p>sizes and the 'w' descriptor in srcset are almost done. (missing the calc()) part). I'll probably aim to ship it
-                        in M37</p>
-                        <p>picture work is next on my list</p>
+                        <p>sizes and the 'w' descriptor in srcset are done. I'll probably aim to ship it in M37</p>
+                        <p>picture work has started and is moving along nicely - Christian is helping with stable state</p>
+                        xxxx Indiegogo campaign
+                    </aside>
+                </section>
+                <section>
+                    <h2>Firefox</h2>
+                    Actively implementing!
+                    <aside class="notes">
+                        John Schoenick from Mozilla is currently working on it. Likely to hit the dev version soon.
                     </aside>
                 </section>
                 <section>
@@ -373,39 +373,49 @@
                     </aside>
                 </section>
                 <section>
-                    <h2>Gotchas</h2>
-                    <img src="resources/bear-trap.jpg">
-                    <p class=credits>http://jaddid.com/bear-trap/attachment/4650/</p>
+                    <h2>Implementation details</h2>
                 </section>
                 <section>
-                    <h2>'w' descriptror without 'sizes'</h2>
-                    <pre><code data-trim data-noescape>
-&lt;img src="otherpic.jpg" alt="The president giving an award."
-     srcset="pic100.jpg 100w, pic200.jpg 200w"&gt;
-                    </code></pre>
-                    is identical to
-                    <pre><code data-trim data-noescape>
-&lt;img src="otherpic.jpg" <span class=highlight>sizes="100vw"</span>
-     alt="The president giving an award."
-     srcset="pic100.jpg 100w, pic200.jpg 200w"&gt;
-                    </code></pre>
-                    <aside class="notes">
-                        When sizes is missing, the default value the browser will use to determine which resource to download and at what
-                        size to display it is '100vw'. (So the full width of the viewport)
-
-                    </aside>
+                    <h2>Media Queries evaluation</h2>
+                    <p class=fragment>PreloadScanner requires off-main-thread MQ eval</p>
                 </section>
                 <section>
-                    <h2>Sizes has no impact on 'x' descriptors</h2>
-                    <pre><code data-trim data-noescape>
-&lt;img src="pic1x.jpg" <span class=highlight style="text-decoration: line-through">sizes="1vw"</span>
-     alt="The president giving an award."
-     srcset="pic2x.jpg 2x, pic4.jpg 4x"&gt;
-                    </code></pre>
-                    <aside class="notes">
-                        <p>Sizes only influences 'w' descriptors, as it lets the browser figure out these resources' DPR.</p>
-                        <p>Other resources are not impacted</p>
-                    </aside>
+                    <h2>MediaQueryTokenizer</h2>
+                    <p class=fragment>Based on eseidel's CSS syntax compliant tokenizer</p>
+                    <p class=fragment>Implemented the parts needed for MQs and sizes</p>
+                </section>
+                <section>
+                    <h2>MediaQueryParser</h2>
+                    <p class=fragment>Based on MediaQueryTokenizer output</p>
+                    <p class=fragment>Currently turned on only off-main-thread</p>
+                </section>
+                <section>
+                    <h2>MediaValues</h2>
+                    <p class=fragment>Used by MediaQueryEvaluator</p>
+                    <p class=fragment>Has a cached and a dynamic variants which owns a LocalFrame</p>
+                    <p class=fragment>MQ eval no longer depends on RenderStyle</p>
+                    <p class=fragment>Implements thread safe CSS length computation</p>
+                </section>
+                <section>
+                    <h2>SizesAttributeParser</h2>
+                    <p class=fragment>Based on MediaQueryTokenizer output</p>
+                    <p class=fragment>Uses MediaQueryParser as a component</p>
+                </section>
+                <section>
+                    <h2>SizesCalcParser</h2>
+                    <p class=fragment>Based on MediaQueryTokenizer output</p>
+                    <p class=fragment>Calc syntax => reverse polish notation => length</p>
+                </section>
+                <section>
+                    <h2>HTMLSrcsetParser</h2>
+                    <p class=fragment>Parses the srcset attribute </p>
+                    <p class=fragment>'w' descriptors converted to DPR (using 'sizes')</p>
+                    <p class=fragment>Picks the best candidate to load</p>
+                </section>
+                <section>
+                    <h2>Stable state image loading</h2>
+                    <p class=fragment>Required for picture, as well as proper JS setting of img attributes</p>
+                    <p class=fragment>Worked on by Christian Biesinger</p>
                 </section>
                 <section>
                     <h2>Intrinsic sizing</h2>
@@ -424,129 +434,151 @@
                     </aside>
                 </section>
                 <section>
-                    <h2>@viewport should be inlined!</h2>
-                    <pre><code data-trim data-noescape>
-&lt;style&gt;
-    @viewport {
-        width: auto;
-    }
-&lt;/style&gt;
-                    </code></pre>
+                    <h2>Possible future</h2>
+                </section>
+                <section>
+                    <h2>Client Hints</h2>
+                    <ul>
+                        <li class="fragment">Proposed by Ilya Grigorik</li>
+                        <li class="fragment">HTTP based content-negotiation solution</li>
+                        <li class="fragment">Client sends hints/capabilities</li>
+                        <li class="fragment">Server side logic decides on resource</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Request headers</h2>
                     <aside class="notes">
-                        viewport instructions should be inlined so that browsers can use them to determine which resources to fetch
+                    </aside>
+				</section>
+                <section>
+                    <h2>CH-DPR</h2>
+                </section>
+                <section>
+                    <h2>CH-RW</h2>
+                    Resource Width
+                    <p>Implicitly relies on src-N's viewport-url </p>
+                </section>
+                <section>
+                    <h2>Response headers</h2>
+                    <aside class="notes">
+                    </aside>
+				</section>
+                <section>
+                    <h2>DPR</h2>
+                    <p>Server confirmation header</p>
+                    <p>Used for intrinsic image sizing</p>
+                    <aside class="notes">
+                    </aside>
+				</section>
+                <section>
+                    <h3>Opt-in only</h3>
+                    <p>Not sent on initial HTML request</p>
+                </section>
+                <section>
+                    <h2>Responsive Image Container</h2>
+                    <ul>
+                        <li class="fragment">File format approach</li>
+                        <li class="fragment">A "layer" per resolution</li>
+                        <li class="fragment">Both resolution switching and art-direction</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Resolution switching</h3>
+                    <img src="resources/res_switch_shrink.png">
+                    <p>336x635</p>
+                </section>
+                <section>
+                    Is split into
+                </section>
+                <section>
+                    <img src="resources/res_switch.png_layer1.webp.png">
+                    <p>106x200</p>
+                </section>
+                <section>
+                    <img src="resources/res_switch.png_layer2.webp.png">
+                    <img src="resources/res_switch.png_layer2-bw.png">
+                    <p>211x400</p>
+                </section>
+                <section>
+                    <img src="resources/res_switch.png_layer3.webp.png">
+                    <img src="resources/res_switch.png_layer3-bw.png">
+                    <p>336x635</p>
+                </section>
+                <section>
+                    <h3>Art-direction</h3>
+                    <img src="resources/crop.jpg">
+                    <p>770x512</p>
+                </section>
+                <section>
+                    Is split into
+                </section>
+                <section>
+                    <img src="resources/crop.jpg_layer1.webp.png">
+                    <p>200x200</p>
+                </section>
+                <section>
+                    <img src="resources/crop.jpg_layer2.webp.png">
+                    <p>400x288</p>
+                </section>
+                <section>
+                    <img src="resources/crop.jpg_layer3.webp.png">
+                    <p>770x512</p>
+                </section>
+                <section>
+                    <h3>Advantages</h3>
+                    <ul>
+                        <li class="fragment">Markup left untouched</li>
+                        <li class="fragment">A single file per image</li>
+                        <li class="fragment">Better for post-download dimensions changes</li>
+                    </ul>
+                    <aside class="notes">
+                        <p>No markup</p>
+                        <p>single file</p>
+                        <p>can download diff</p>
                     </aside>
                 </section>
                 <section>
-                    <h2>'x' and 'w' resources can be mixed</h2>
-                    <pre><code data-trim data-noescape>
-&lt;img src="otherpic.jpg" alt="The president giving an award."
-     srcset="<span class=highlight>pic-2x.jpg 2x, pic200.jpg 200w, </span>
-             pic400.jpg 400w, pic800.jpg 800w, pic1600.jpg 1600w, 
-             pic3200.jpg 3200w"&gt;
-                    </code></pre>
-                    <p class=fragment>You really shouldn't</p>
+                    <h3>disadvantages</h3>
+                    <ul>
+                        <li class="fragment">Touches many layers. Will take time</li>
+                        <li class="fragment">Decoding performance???</li>
+                        <li class="fragment">Fetching mechanism network performance???</li>
+                    </ul>
                     <aside class="notes">
-                        (fragments)
+                        <p>complicated</p>
+                        <p>decoding perf?</p>
+                        <p>Fetching mechanism</p>
                     </aside>
                 </section>
                 <section>
-                    <h2>'x' and 'w' descriptors cannot</h2>
-                    <p>A big no no</p>
-                    <pre><code data-trim data-noescape>
-&lt;img srcset="<span class=highlight style="text-decoration: line-through">pic200.jpg 100w 2x</span>, pic200.jpg 200w, pic400.jpg 400w, 
-             pic800.jpg 800w, pic1600.jpg 1600w, pic3200.jpg 3200w"&gt;
-                    </code></pre>
-                    <img src="resources/no2.gif">
-                    <aside class="notes">
-                        Such resources will be dropped to the floor, where in the old srcset syntax, you could do that
-                    </aside>
+                    <h2>Progressive image download</h2>
                 </section>
                 <section>
-                    <h2>src cannot be selected when 'w' is present</h2>
-                    <pre><code data-trim data-noescape>
-&lt;img <span class=highlight>src="otherpic.jpg"</span> alt="The president giving an award."
-     srcset="<span class=highlight>pic100.jpg 100w, pic200.jpg 200w</span>"&gt;
-                    </code></pre>
-                    <aside class="notes">
-                        If you have 'w' resources, the 'src' resource is not part of the selection algorithm.
-                        That is to avoid surprises.
-                    </aside>
+                    <img src="resources/005.png">
                 </section>
                 <section>
-                    <h2>src can be selected when only 'x' is present</h2>
-                    <pre><code data-trim data-noescape>
-&lt;img src="small-1x.jpg" <span class=highlight>srcset="small-2x.jpg 2x"</span> 
-     alt="The president."&gt;
-                    </code></pre>
-                    <aside class="notes">
-                        That is in order to avoid the need of repeating the 1x resource twice.
-                    </aside>
+                    <img src="resources/015.png">
                 </section>
                 <section>
-                    <h2>Old 'w' syntax</h2>
-                    Very similar, but very different
-                    <aside class="notes">
-                        <p>If you're writing old srcset syntax, you're stating the viewport width, but it's being interpreted as the image's
-                        width</p>
-                        <p>Since you didn't add sizes, the browser will assume 100vw.</p>
-                        <p>That means that the resource you think should be picked will be picked (YAY!)</p>
-                        <p>But its intrinsic sizing will be WAY off.</p>
-                        <p>BTW, we're now considering changing 'w' to something else, to avoid that confusion</p>
-                    </aside>
+                    <img src="resources/025.png">
                 </section>
                 <section>
-                    <h2>Styling</h2>
-                    <h3 style="margin-top: 120px">"Picture is a magical span, nothing more"</h3>
-                    <p style="text-align: right">- Tab Atkins</p>
-                    <!-- Add a picture of a unicore thing -->
-                    <aside class="notes">
-                        <p>As far as styling goes, all the style that should impact the image itself, should still go on the img
-                        element.</p>
-                        <p>Picture is simply a wrapper around that img, which as far as styling goes, behaves like a span.</p>
-                    </aside>
+                    <img src="resources/035.png">
                 </section>
                 <section>
-                    <h2>Polyfilling</h2>
+                    <img src="resources/045.png">
                 </section>
                 <section>
-                    <h2>Picturefill</h2>
-                    <p>The official spec-compliant RICG polyfill</p>
-                    <p>Community effort led by the Filament Group</p>
-                    <aside class="notes">
-                        <p>Scott Jehl and Mat Marquis from the filament group have worked on the latest version to make it as spec compliant as
-                        possible.</p>
-                        <p>Shawn Jansepar from Mobify contributed the initial patch that supports the latest syntax.</p>
-                        <p>They've put in a lot of time to make it as close as possible to the final browser implementations, so you might
-                        as well use it :)</p>
-                    </aside>
+                    <img src="resources/055.png">
                 </section>
                 <section>
-                    <h2>Polyfilling gotchas</h2>
+                    <img src="resources/065.png">
                 </section>
                 <section>
-                    <h2>Double download</h2>
-                    <aside class="notes">
-                        <p>Most of the responsive image polyfills have a tendency to download the fallback image as well as the final image
-                        required.</p><p> So make sure the polyfill you're using doesn't do that, or embraces the double download (LQIP)</p>
-                    </aside>
+                    <img src="resources/080.png">
                 </section>
                 <section>
-                    <h2>Old 'w' syntax polyfill</h2>
-                    <aside class="notes">
-                        <p>Older polyfills should be avoided, especially ones that implemented the old srcset algorithm.</p>
-                        <p>They would interpret the 'w' value differently than the standard implementation, meaning that users of different
-                        browsers will get different image resources.</p>
-                    </aside>
-                </section>
-                <section>
-                    <h2>Future compat</h2>
-                    <h3>Feature detection FTW!</h3>
-                    <pre style="display:inline"><code data-trim style="display: inline">HTMLImageElement.sizes</code></pre> &amp;
-                    <pre style="display:inline"><code data-trim style="display: inline">HTMLPictureElement</code></pre>
-                    <aside class="notes">
-                        <p>The syntax may be extended in the future (e.g. with 'h' descriptors for height-constrained images).</p>
-                        <p>Make sure your polyfill uses feature detection, and backs off when native support is detected.</p>
-                    </aside>
+                    <img src="resources/100.png">
                 </section>
                 <section>
                     <h1>Thanks!</h1>
