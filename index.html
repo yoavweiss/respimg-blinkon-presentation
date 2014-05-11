@@ -88,7 +88,68 @@
                     </aside>
                 </section>
                 <section>
-                    <h2>Turned out to be</h2>
+                    <h2>But that's no a problem</h2>
+                    <aside class="notes">
+                    </aside>
+				</section>
+                <section>
+                    Just send the largest possible image
+                    <aside class="notes">
+                    </aside>
+				</section>
+                <section>
+                    Let the browser resize it
+                    <aside class="notes">
+                    </aside>
+				</section>
+                <section>
+                    <h2>EAZZZZZZY!!!</h2>
+                    <p><img src="resources/proud.gif"></p>
+                    <aside class="notes">
+                    </aside>
+				</section>
+                <section>
+                    <h2>Well...</h2>
+                    <p><img src="resources/faceplant.gif"></p>
+                    <aside class="notes">
+                        That strategy was deployed by Web developers, but it may not surprise you that it turned out to be... sub-optimal.
+                    </aside>
+				</section>
+                <section>
+                    <h2>This led to
+                    <span class="fragment" style="font-size: 1.75em">BLOAT!!!</></h2>
+                    <p><img src="resources/bloat.jpg"></p>
+                    <aside class="notes">
+                        <p>Mobile experience became better, but slower</p>
+                        <p>"a responsive site" became a synonym of "a slow site"</p>
+                    </aside>
+                </section>
+                <section>
+                    <h2>72% Serve same resources</h2>
+                    <p><img src="resources/2013-page-size-small-vs-big1.png" height=300px></p>
+                    <p><small><a href="http://www.guypo.com/uncategorized/real-world-rwd-performance-take-2/">guypo.com</a></small></p>
+                    <aside class="notes">
+                        <p>Serving the same resources to mobile and desktop hurts performance</p>
+                        <p>On mobile the images are much smaller and some of them are not even displayed</p>
+                    </aside>
+                </section>
+                <section>
+                    <h2>Which resources?</h2>
+                    <p>Images - over 61%</p>
+                    <p><img src="resources/httparchive_images.png"></p>
+                    <p><small><a href="http://httparchive.org">httparchive.org</a></small></p>
+                </section>
+                <section>
+                    <h2>How much can be saved?</h2>
+                    <p>Up to&trade; 72% image data savings</p>
+                    <p><img src="resources/sizerSoze-savings.png"></p>
+                    <small><a href="http://timkadlec.com/2013/06/why-we-need-responsive-images/">tkadlec.com</a></small>
+                    <aside class="notes">
+                        A small utility I cooked up and Tim Kadlec wrote about showed 72% data savings
+                    </aside>
+                </section>
+                <section>
+                    <h2>So quality issue became</h2>
                     <img width=600px src="resources/monthly_data_plan_shiny_website.jpg">
                     <aside class="notes">
                         This has turned out to be an abuse of our users data plans, which may be limited.
@@ -124,6 +185,7 @@
                 </section>
                 <section>
                     <h2>Picture vs. srcset</h2>
+                    Turned into picture and srcset
                     <aside class="notes">
                         <p>The CG came up with the picture proposal, Hixie added srcset to the spec without any public discussion.</p>
                         <p>A lot of mailing list flame wars. Things got tense.</p>
@@ -373,49 +435,71 @@
                     </aside>
                 </section>
                 <section>
-                    <h2>Implementation details</h2>
+                    <h2>A look under the hood</h2>
+                    <p class=fragment><img src="resources/under-the-hood.jpg"></p>
+                    <p class="credits fragment"><a href="http://www.newyorkshitty.com/williamsburg/3196">http://www.newyorkshitty.com/williamsburg/3196</a></p>
                 </section>
                 <section>
                     <h2>Media Queries evaluation</h2>
                     <p class=fragment>PreloadScanner requires off-main-thread MQ eval</p>
+                    <aside class="notes">
+                        <p>Getting picture and sizes to wrok requires MQ eval in the preloadScanner</p>
+                        <p>Since the Bison parser and related classes are not thread safe, I had to create an alternative mechanism</p>
+                    </aside>
                 </section>
                 <section>
                     <h2>MediaQueryTokenizer</h2>
-                    <p class=fragment>Based on eseidel's CSS syntax compliant tokenizer</p>
+                    <p class=fragment>Based on eseidel's CSS syntax tokenizer</p>
                     <p class=fragment>Implemented the parts needed for MQs and sizes</p>
+                    <aside class="notes">
+                        <p>I started by taking Eric's tokenizer and adapting it to my needs.</p>
+                        <p>I've deleted the parts that I didn't need and implemented the missing parts that I did</p>
+                    </aside>
                 </section>
                 <section>
                     <h2>MediaQueryParser</h2>
-                    <p class=fragment>Based on MediaQueryTokenizer output</p>
                     <p class=fragment>Currently turned on only off-main-thread</p>
+                    <aside class="notes">
+                        <p>Then I've build a parser for MediaQuery syntax that is based on the tokenizer's output</p>
+                        <p>It's currently turned on only off-main-thread (so in the preloader, for 'media' attributes as well as the sizes
+                        stuff)</p>
+                        <p>I plan to turn it on for all MQ evaluation soon, since it has better spec compliance, and it'd be easier
+                        to add stuff to it (e.g. calc support for MQs, MQ L4).
+                        </p>
+                    </aside>
                 </section>
                 <section>
                     <h2>MediaValues</h2>
                     <p class=fragment>Used by MediaQueryEvaluator</p>
-                    <p class=fragment>Has a cached and a dynamic variants which owns a LocalFrame</p>
+                    <p class=fragment>Cached variant - contains static values</p>
+                    <p class=fragment>Dynamic variants - refs a LocalFrame</p>
                     <p class=fragment>MQ eval no longer depends on RenderStyle</p>
                     <p class=fragment>Implements thread safe CSS length computation</p>
                 </section>
                 <section>
                     <h2>SizesAttributeParser</h2>
-                    <p class=fragment>Based on MediaQueryTokenizer output</p>
                     <p class=fragment>Uses MediaQueryParser as a component</p>
+                    <aside class="notes">
+                        <p>Since 'sizes' syntax is based on CSS, I've used the Tokenizer also for the sizes attribute parser.</p>
+                    </aside>
                 </section>
                 <section>
                     <h2>SizesCalcParser</h2>
-                    <p class=fragment>Based on MediaQueryTokenizer output</p>
-                    <p class=fragment>Calc syntax => reverse polish notation => length</p>
+                    <p class=fragment>Calc syntax => tokens => reverse polish notation => length</p>
+                    <aside class="notes">
+                        <p>Here again, I've used the Tokenizer to get the calc tokens.</p>
+                        <p>Then I got rid of the parens by turning them into reverse Polish notation (Dijkstra's shunting yard algo)</p>
+                        <p>And finally, calculate the output length</p>
+                    </aside>
                 </section>
                 <section>
                     <h2>HTMLSrcsetParser</h2>
                     <p class=fragment>Parses the srcset attribute </p>
                     <p class=fragment>'w' descriptors converted to DPR (using 'sizes')</p>
                     <p class=fragment>Picks the best candidate to load</p>
-                </section>
-                <section>
-                    <h2>Stable state image loading</h2>
-                    <p class=fragment>Required for picture, as well as proper JS setting of img attributes</p>
-                    <p class=fragment>Worked on by Christian Biesinger</p>
+                    <aside class="notes">
+                        <p>A stand alone parser for the srcset syntax. Used from both HTMLImageElement and HTMLPreloadScanner</p>
+                    </aside>
                 </section>
                 <section>
                     <h2>Intrinsic sizing</h2>
@@ -434,7 +518,26 @@
                     </aside>
                 </section>
                 <section>
+                    <h2>Stable state image loading</h2>
+                    <p class=fragment>Required to avoid double download</p>
+                    <p class=fragment>Also required for img attribute setting</p>
+                    <p class=fragment>Worked on by Christian Biesinger (Thanks, Christian! :))</p>
+                    <aside class="notes">
+                        <p>In the HTML spec it is stated that images should start their download only after reaching stable state.</p>
+                        <p>That means that HTMLImageElement is able to know who its parent node is (when set by parser) and avoid a double
+                        download</p>
+                        <p>When set by JS, it means that JS running was terminated so that the order in which attributes are set on img
+                        doesn't matter</p>
+                        <p>That wasn't how things worked in Blink though</p>
+                        <p>I poked around a little bit with it (added tests and such), and then Christian Biesinger took it upon himself to
+                        make sure the spec makes it easier to be compliant and then align Blink's behaviour to the spec.</p>
+                    </aside>
+                </section>
+                <section>
                     <h2>Possible future</h2>
+                    <img src="resources/hoverboard.jpg">
+                    <p class=credits><a
+                        href="http://earnthis.net/brian-terrills-100-film-favorites-22-back-to-the-future-part-ii/">http://earnthis.net/brian-terrills-100-film-favorites-22-back-to-the-future-part-ii/</a></p>
                 </section>
                 <section>
                     <h2>Client Hints</h2>
@@ -456,7 +559,7 @@
                 <section>
                     <h2>CH-RW</h2>
                     Resource Width
-                    <p>Implicitly relies on src-N's viewport-url </p>
+                    <p>Implicitly relies on 'sizes'</p>
                 </section>
                 <section>
                     <h2>Response headers</h2>
