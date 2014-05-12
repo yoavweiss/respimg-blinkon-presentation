@@ -31,6 +31,7 @@
         <style>
             .reveal p.credits{font-size:16px;}
             code span.highlight {font-weight: bold; font-size: 1.4em;}
+            .reveal code {font-size: 1.2em; width: 120%;margin-left: -10%;line-height: 1.3em;}
         </style>
     </head>
 
@@ -40,18 +41,12 @@
 
             <!-- Any section element inside of this container is displayed as a slide -->
             <div class="slides">
-                <section>
+                <section style="width: 120%;margin-left: -10%">
                     <h1>Responsive Images</h1>
                     <p> <a href="https://twitter.com/yoavweiss">Yoav Weiss</a></p>
                     <p>BlinkOn - Zurich, May 2014</p>
                     <p><a href="http://yoavweiss.github.io/respimg-blinkon-presentation/">yoavweiss.github.io/respimg-blinkon-presentation</a></p>
                     <aside class="notes">
-                    </aside>
-                </section>
-                <section>
-                    <img width=800px src="resources/braceyourselves.jpg">
-                    <aside class="notes">
-                        Hi, I'm here today to talk about the responsive images solution that's coming soon to a browser near you.
                     </aside>
                 </section>
                 <section>
@@ -69,6 +64,8 @@
                         <p>A member of the RICG</p>
                         <p>A Blink &amp; WebKit committer</p>
                         <p>Prototyped picture in WebKit. Implemented srcset in Blink. Now implementing (the new) picture.</p>
+                        <p>I also been working on front end optimization server side solutions for the last 15 years, and am on a personal
+                        vendetta on image bloat on the Web</p>
                     </aside>
                 </section>
                 <section>
@@ -76,7 +73,7 @@
                     <p class=fragment>Efficiently load properly dimensioned images that fit the page's design</p>
                     <aside class="notes">
                         (fragments)
-                        <p>Who knows what the responsive image problem is?</p>
+                        <p>Who knows what the responsive images problem is?</p>
                     </aside>
                 </section>
                 <section>
@@ -88,17 +85,17 @@
                     </aside>
                 </section>
                 <section>
-                    <h2>But that's no a problem</h2>
+                    <h2>"But that's easy"</h2>
                     <aside class="notes">
                     </aside>
 				</section>
                 <section>
-                    Just send the largest possible image
+                    <h2>"Just send the largest possible image"</h2>
                     <aside class="notes">
                     </aside>
 				</section>
                 <section>
-                    Let the browser resize it
+                    <h2>"And let the browser resize it"</h2>
                     <aside class="notes">
                     </aside>
 				</section>
@@ -149,7 +146,8 @@
                     </aside>
                 </section>
                 <section>
-                    <h2>So quality issue became</h2>
+                    <h2>So quality issues became</h2>
+                    <p class=fragment>data plan abuse</p>
                     <img width=600px src="resources/monthly_data_plan_shiny_website.jpg">
                     <aside class="notes">
                         This has turned out to be an abuse of our users data plans, which may be limited.
@@ -181,16 +179,15 @@
                 </section>
                 <section>
                     <h2>And the RICG was born</h2>
-                    <img width=600px src="resources/community-group.jpg">
+                    <img width=600px src="resources/ricg.png">
                 </section>
                 <section>
                     <h2>Picture vs. srcset</h2>
-                    Turned into picture and srcset
+                    <p class=fragment>Turned into picture *with* srcset</p>
                     <aside class="notes">
-                        <p>The CG came up with the picture proposal, Hixie added srcset to the spec without any public discussion.</p>
+                        <p>The CG came up with the picture proposal, Hixie added srcset to the HTML spec.</p>
                         <p>A lot of mailing list flame wars. Things got tense.</p>
-                        <p>I believe that in the root of this tension, was misunderstanding on the part of both sides.</p>
-                        <p>I can talk about it for hours, so I won't :)</p>
+                        <p>Over time, the srcset syntax was adopted into the picture syntax, since they covered different use cases</p>
                     </aside>
                 </section>
                 <section>
@@ -198,16 +195,18 @@
                     <img src="resources/Dog-and-Cat-working-together.jpg">
                     <p class="credits">http://www.jokeroo.com/pictures/funny/893657.html</p>
                     <aside class="notes">
-                        <p>Fast forward</p>
-                        <p>It took another 2 years to get the tides to turn.</p>
-                        <p>Mainly to convince key browser people that this is an actual problem that needs solving, 
-                        and work with them to get to a proposal that everyone are happy with.</p>
+                        <p>Fast forward 2 years later</p>
+                        <p>The RICG &amp; whatwg/blink folks are working together on the spec, to make it as awesome as possible. Mozilla is
+                        also heavily involved</p>
                     </aside>
                 </section>
                 <section>
                     <h2>The road there wasn't easy</h2>
                     <img width=600px src="resources/RoadNotTaken.jpg">
                     <p class=credits>http://memoirvita28.blogspot.fr/2012/11/the-road-not-taken.html</p>
+                    <aside class="notes">
+                        After the initial flame wars, browser vendors disinterest in implementing the picture spec, led to stagnation.
+                    </aside>
                 </section>
                 <section>
                     <h2>Src-N</h2>
